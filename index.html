@@ -2189,6 +2189,13 @@
         return;
       }
       currentEstId = estId;
+      
+      // RESET DOS FILTROS E DA LUPA DE BUSCA SEMPRE QUE ENTRAR NA CARTA
+      filterState = { country: 'all', region: 'all', type: 'all' };
+      wineSearchQuery = '';
+      const searchInput = document.getElementById('wineSearchInput');
+      if (searchInput) searchInput.value = '';
+      
       navigateTo('catalog');
     };
 
