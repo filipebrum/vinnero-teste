@@ -1016,7 +1016,7 @@
         </button>
         <button onclick="promptMasterLogin()" title="Gestão Master" class="p-2 rounded-xl text-vinnero-gold/80 hover:text-vinnero-gold hover:bg-white/5 transition">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
           </svg>
         </button>
       </div>
@@ -1033,7 +1033,7 @@
   <!-- ==================== LÓGICA JAVASCRIPT INTEGRAL E COMPLETA ==================== -->
   <script>
     /* ==================== ESTADO GLOBAL DA APLICAÇÃO ==================== */
-    const VINNERO_BUILD_VERSION = 'vinnero_build_2026_v7_FULL_RESTORE';
+    const VINNERO_BUILD_VERSION = 'vinnero_build_2026_v8_FINAL';
     let currentView = 'hub';
     let currentEstId = 'est_divino';
     let currentLang = 'pt';
@@ -1059,6 +1059,16 @@
     let isInitialSupabaseLoaded = false;
     let pollingIntervalTimer = null;
     let canUseWebSocket = true;
+
+    // CÉREBRO: ISOLAMENTO DO BANCO DE DADOS TESTE VS PRODUÇÃO
+    function getDbRecordId() {
+      const host = window.location.hostname.toLowerCase();
+      // Se for ambiente de testes, vercel preview, localhost, usa o banco de teste
+      if (host.includes('teste') || host.includes('localhost') || host.includes('google') || host === '') {
+          return 'global_data_teste';
+      }
+      return 'global_data'; // Seu banco real e oficial
+    }
 
     function isWebSocketPermitted() {
       try {
@@ -1108,7 +1118,15 @@
           updateSyncIndicator(true);
           if (canUseWebSocket) setupSupabaseRealtime();
           syncFromSupabase();
-          if (!pollingIntervalTimer) pollingIntervalTimer = setInterval(() => { if(supabaseClient) syncFromSupabase(true); }, 8000);
+          
+          // OTIMIZAÇÃO CRÍTICA DE BANDA (EGRESS):
+          // Removido o download a cada 8 segundos (8000). 
+          // Agora só baixa a cada 5 minutos (300000) SE o WebSocket (tempo real) falhar.
+          if (!pollingIntervalTimer) {
+            pollingIntervalTimer = setInterval(() => { 
+              if(supabaseClient && !canUseWebSocket) syncFromSupabase(true); 
+            }, 300000);
+          }
         } else {
           updateSyncIndicator(false);
         }
@@ -1132,7 +1150,7 @@
       if (window.supabase && window.supabase.createClient) {
         supabaseClient = window.supabase.createClient(url, rawKey, { auth: { persistSession: false } });
         showToast('Conectando ao Supabase...');
-        const { data } = await supabaseClient.from('vinnero_state').select('content').eq('id', 'global_data').maybeSingle();
+        const { data } = await supabaseClient.from('vinnero_state').select('content').eq('id', getDbRecordId()).maybeSingle();
         if (data && data.content && Array.isArray(data.content) && data.content.length > 0) {
           establishments = data.content;
           localStorage.setItem('vinnero_establishments', JSON.stringify(establishments));
@@ -1162,7 +1180,7 @@
     async function syncFromSupabase(isBackground = false) {
       if (!supabaseClient) return;
       try {
-        const { data, error } = await supabaseClient.from('vinnero_state').select('content, updated_at').eq('id', 'global_data').maybeSingle();
+        const { data, error } = await supabaseClient.from('vinnero_state').select('content, updated_at').eq('id', getDbRecordId()).maybeSingle();
         if (error || !data || !data.content) {
           if (!data && !isInitialSupabaseLoaded) { await syncToSupabase(); isInitialSupabaseLoaded = true; }
           return;
@@ -1198,7 +1216,7 @@
     async function syncToSupabase() {
       if (!supabaseClient) return;
       try {
-        await supabaseClient.from('vinnero_state').upsert({ id: 'global_data', content: establishments, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+        await supabaseClient.from('vinnero_state').upsert({ id: getDbRecordId(), content: establishments, updated_at: new Date().toISOString() }, { onConflict: 'id' });
         updateSyncIndicator(true);
       } catch (e) {}
     }
