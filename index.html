@@ -521,6 +521,27 @@
         <button onclick="saveOperatingVenueInfo()" class="w-full py-2.5 rounded-xl bg-vinnero-wine text-white text-xs font-bold hover:bg-vinnero-wineDark transition mt-2">
           Salvar Dados do Local
         </button>
+
+        <!-- SESSÃO DE QR CODE (GERADOR DINÂMICO) -->
+        <div class="mt-6 pt-5 border-t border-vinnero-gold/20">
+          <h4 class="font-bold text-vinnero-wine mb-1">QR Code de Mesa / Balcão</h4>
+          <p class="text-[10px] text-vinnero-muted mb-3">Imprima este QR Code. Ele direciona os clientes direto para a sua carta exclusiva.</p>
+          <div class="flex items-center gap-4">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-xl border border-vinnero-gold/30 p-2 shadow-sm flex items-center justify-center shrink-0">
+              <img id="opVenueQRCode" src="" alt="QR Code" class="w-full h-full object-contain">
+            </div>
+            <div class="flex-1 space-y-2">
+              <button onclick="downloadVenueQRCode()" class="w-full px-3 py-2 rounded-xl bg-vinnero-wine text-white text-xs font-bold hover:bg-vinnero-wineDark transition shadow-sm flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Baixar Imagem
+              </button>
+              <button onclick="copyVenueLink()" class="w-full px-3 py-2 rounded-xl bg-white border border-vinnero-gold/30 text-vinnero-wine text-xs font-bold hover:bg-vinnero-wine/5 transition shadow-sm flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                Copiar Link Direto
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="opContent_analytics" class="space-y-4 text-xs hidden">
@@ -1498,12 +1519,36 @@
         },
         wines: [
           {
-            id: 'w_brun', name: 'Brunello di Montalcino DOCG', category: 'red', price: 1190.00, priceHalf: null, priceGlass: null, vintage: '2017', volume: '750ml',
-            producer: 'Castello Banfi', country: 'Itália', terroir: 'Toscana', wineryHistory: 'Reconhecida como a principal construtora de Montalcino, a Banfi revolucionou a clonagem da Sangiovese.',
-            mapQuery: 'Castello Banfi, Montalcino, Italy', grapes: 'Sangiovese Grosso (100%)',
-            tastingNotes: 'Aromas intensos de cerejas maduras, couro, especiarias doces e violetas secas. Estrutura impecável, taninos firmes e polidos.',
-            pairingSuggestion: 'Bistecca alla Fiorentina, risoto ao funghi porcini e massas artesanais com ragu de ossobuco.',
-            lat: 42.9868, lng: 11.4428, stock: 14, available: true, image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1000&auto=format&fit=crop&q=80'
+            id: 'w_veuve', name: 'Veuve Clicquot Yellow Label Brut', category: 'sparkling', price: 549.00, priceHalf: null, priceGlass: null, vintage: 'N/V', volume: '750ml',
+            producer: 'Veuve Clicquot Ponsardin', country: 'França', terroir: 'Champagne', wineryHistory: 'Fundada em 1772, a Maison Veuve Clicquot é mundialmente famosa por sua excelência e espírito de inovação.',
+            mapQuery: 'Veuve Clicquot, Reims, France', grapes: 'Pinot Noir, Chardonnay, Pinot Meunier',
+            tastingNotes: 'Aromas de pêssego branco, anis, biscoito e brioche. Perlage fina e persistente, com acidez refrescante.',
+            pairingSuggestion: 'Ostras, caviar, tartar de salmão e queijos de massa mole como Brie.',
+            lat: 49.2452, lng: 4.0373, stock: 12, available: true, image: 'https://images.unsplash.com/photo-1599566938927-46328bcbf511?w=1000&auto=format&fit=crop&q=80'
+          },
+          {
+            id: 'w_angel', name: 'Whispering Angel Rosé', category: 'rose', price: 298.00, priceHalf: null, priceGlass: null, vintage: '2022', volume: '750ml',
+            producer: 'Château d\'Esclans', country: 'França', terroir: 'Provence', wineryHistory: 'O Château d\'Esclans está localizado no coração da Provence e se consolidou rapidamente como o produtor dos rosés mais cobiçados.',
+            mapQuery: 'Chateau d\'Esclans, Provence, France', grapes: 'Grenache, Cinsault, Rolle (Vermentino)',
+            tastingNotes: 'Cor rosa pálido brilhante. Aromas de frutas vermelhas frescas, pêssego e notas florais. Final deliciosamente mineral.',
+            pairingSuggestion: 'Salada niçoise, ceviche de peixe branco, camarões grelhados e culinária asiática leve.',
+            lat: 43.4682, lng: 6.5786, stock: 24, available: true, image: 'https://images.unsplash.com/photo-1559564104-e53f1917f6bd?w=1000&auto=format&fit=crop&q=80'
+          },
+          {
+            id: 'w_angelica', name: 'Angélica Zapata Cabernet Franc', category: 'red', price: 345.00, priceHalf: null, priceGlass: null, vintage: '2019', volume: '750ml',
+            producer: 'Bodega Catena Zapata', country: 'Argentina', terroir: 'Mendoza', wineryHistory: 'Cultivadas em vinhedos de alta altitude, as uvas homenageiam Angélica Zapata, matriarca de uma das famílias mais importantes da viticultura argentina.',
+            mapQuery: 'Catena Zapata, Mendoza, Argentina', grapes: 'Cabernet Franc (100%)',
+            tastingNotes: 'Aromas marcantes de frutas negras maduras, pimentão doce assado, especiarias e toques de baunilha.',
+            pairingSuggestion: 'Carnes assadas na brasa, empanadas argentinas, ragu de linguiça e queijos maduros.',
+            lat: -33.1000, lng: -68.9667, stock: 8, available: true, image: 'https://images.unsplash.com/photo-1509424163935-7cb625f38e3e?w=1000&auto=format&fit=crop&q=80'
+          },
+          {
+            id: 'w_cartuxa', name: 'Cartuxa Évora Tinto', category: 'red', price: 389.00, priceHalf: null, priceGlass: null, vintage: '2019', volume: '750ml',
+            producer: 'Fundação Eugénio de Almeida', country: 'Portugal', terroir: 'Alentejo', wineryHistory: 'Os vinhos Cartuxa traduzem a tradição e excelência do Alentejo, sendo produzidos na histórica Adega da Cartuxa, antigo refúgio dos monges.',
+            mapQuery: 'Adega da Cartuxa, Évora, Portugal', grapes: 'Aragonez, Alicante Bouschet, Trincadeira',
+            tastingNotes: 'Aroma elegante e complexo, com notas de frutas vermelhas maduras, ameixa, especiarias e um leve toque de madeira. Estruturado e persistente.',
+            pairingSuggestion: 'Bacalhau assado, carnes vermelhas grelhadas, embutidos ibéricos e queijos de ovelha curados.',
+            lat: 38.5831, lng: -7.9254, stock: 15, available: true, image: 'https://images.unsplash.com/photo-1585553616435-2dc0a54e271d?w=1000&auto=format&fit=crop&q=80'
           }
         ]
       }
@@ -1910,7 +1955,50 @@
       document.getElementById('opVenueName').value = est.name;
       document.getElementById('opVenueCity').value = est.city || 'Nova Lima, MG';
       document.getElementById('opVenuePhone').value = est.phone || '';
+      
+      // Atualiza o Gerador de QR Code
+      const venueUrl = window.location.origin + window.location.pathname + '?est=' + operatingEstId;
+      const qrCodeImg = document.getElementById('opVenueQRCode');
+      if (qrCodeImg) {
+        qrCodeImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=' + encodeURIComponent(venueUrl);
+      }
     }
+
+    window.downloadVenueQRCode = function() {
+      const venueUrl = window.location.origin + window.location.pathname + '?est=' + operatingEstId;
+      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=' + encodeURIComponent(venueUrl);
+      
+      showToast('Baixando QR Code...');
+      fetch(qrUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = `qrcode_vinnero_${operatingEstId}.png`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        })
+        .catch(() => window.open(qrUrl, '_blank'));
+    };
+
+    window.copyVenueLink = function() {
+      const venueUrl = window.location.origin + window.location.pathname + '?est=' + operatingEstId;
+      navigator.clipboard.writeText(venueUrl).then(() => {
+        showToast('Link direto copiado para a área de transferência!');
+      }).catch(() => {
+        const textArea = document.createElement("textarea");
+        textArea.value = venueUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("Copy");
+        textArea.remove();
+        showToast('Link direto copiado para a área de transferência!');
+      });
+    };
 
     window.toggleWineAvailability = function(wineId) {
       const est = establishments.find(e => e.id === operatingEstId);
