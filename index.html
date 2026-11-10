@@ -1054,7 +1054,7 @@
     let operatingEstId = 'est_divino';
     let currentSelectedWine = null;
     let deferredInstallPrompt = null;
-    let catalogViewMode = 'cards'; // 'cards' ou 'list'
+    let catalogViewMode = 'list'; // Alterado para 'list' como padrão
 
     // Estado da Gaveta Drill-down (Agora para Restaurantes E Lojas)
     let filterState = {
@@ -2537,7 +2537,7 @@
       const mrrMap = { basic: 197.00, pro: 397.00, premium: 697.00 };
       let totalMrr = 0; establishments.forEach(e => { totalMrr += mrrMap[e.plan] || 397.00; });
       document.getElementById('masterTotalMrr').innerText = `R$ ${totalMrr.toFixed(2).replace('.', ',')}`;
-      document.getElementById('masterActiveVenues').innerText = `${establishments.length} estabelecimentos`;
+      document.getElementById('masterActiveVenues').innerText = `${establishments.length} establishments`;
 
       const list = document.getElementById('masterVenuesList');
       list.innerHTML = establishments.map(e => `
@@ -2698,6 +2698,9 @@
       renderHub();
       checkDirectUrlParams();
       initSupabase();
+      
+      // TRAVANDO O INÍCIO DO APLICATIVO COMO LISTA POR PADRÃO
+      setCatalogViewMode('list');
     });
   </script>
 </body>
